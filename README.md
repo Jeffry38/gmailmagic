@@ -1,6 +1,6 @@
 # Gmail Alias Finder
 
-You can try it out at [https://github.com/smsunarto/gmail-alias-finder](https://github.com/smsunarto/gmail-alias-finder)
+You can try it out at [https://smsunarto.com/gmail-alias-finder/](https://smsunarto.com/gmail-alias-finder/)
 
 This simple website finds the possible aliases for your Gmail or GSuite email addresses. It looks for both dot and plus prefix aliases.
 
