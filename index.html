@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
+        />
+        <script
+            defer
+            src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+        ></script>
+
+        <link rel="stylesheet" href="./css/styles.css" />
+    </head>
+    <body>
+        <section class="section section-hero">
+            <div class="container">
+                <div class="columns">
+                    <div class="column">
+                        <h1 class="title is-1">Find Gmail Address Aliases</h1>
+                        <h2 class="subtitle is-4">
+                            Find alternate email addresses that points to your
+                            gmail inbox
+                        </h2>
+
+                        <strong>You can use Gmail aliases for:</strong>
+                        <ul>
+                            <li>
+                                <i class="fas fa-check mr-2"></i>Making multiple
+                                account registrations in one website
+                            </li>
+                            <li>
+                                <i class="fas fa-check mr-2"></i>Identifying
+                                which website shares your email without your
+                                consent
+                            </li>
+                            <li>
+                                <i class="fas fa-check mr-2"></i>Making it
+                                easier to separate incoming emails into folders
+                            </li>
+                        </ul>
+
+                        <form id="input-form" action="" class="mt-5">
+                            <div class="field has-addons">
+                                <div
+                                    class="control has-icons-left email-input-container"
+                                >
+                                    <input
+                                        class="input"
+                                        type="email"
+                                        placeholder="john.smith@gmail.com"
+                                        id="email-target"
+                                        required
+                                    />
+                                    <span class="icon is-left">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                </div>
+                                <div class="control">
+                                    <button
+                                        class="button is-primary"
+                                        onclick="findAliases()"
+                                    >
+                                        Find Aliases
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="postscript mt-4">
+                                Note: GSuite custom domain is also supported.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-result">
+            <div class="container">
+                <div class="columns is-variable is-8-desktop">
+                    <div class="column dot-trick">
+                        <h2 class="title">Dot Aliases</h2>
+                        <p class="subtitle is-5 mt-3">
+                            You can add a "." (dot) in between each of the
+                            username characters and it will be treated as the
+                            same address by gmail.
+                        </p>
+                        <textarea
+                            class="textarea"
+                            id="dotify-result"
+                            readonly
+                        ></textarea>
+                    </div>
+                    <div class="column plus-trick">
+                        <h2 class="title">Plus Aliases</h2>
+                        <p class="subtitle is-5 mt-3">
+                            You can add any prefix after your username using the
+                            "+" (plus) symbol and it will be treated as the same
+                            address by gmail.
+                        </p>
+                        <textarea
+                            class="textarea"
+                            id="plusify-result"
+                            readonly
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <strong>Gmail Alias Finder</strong> by
+                <a href="https://smsunarto.com">Scott Moses Sunarto</a>. The
+                source code is available on GitHub and licensed under
+                <a href="http://opensource.org/licenses/mit-license.php">MIT</a
+                >.
+            </div>
+        </footer>
+
+        <script src="./js/word-gen.js"></script>
+        <script>
+            let emailAddress = "john.smith@gmail.com";
+            let emailUsername = emailAddress.split("@")[0];
+            let emailDomain = emailAddress.split("@")[1];
+
+            /**
+             * Recursively find email aliases using dot seperators
+             * @param {Array<string>} username username of email as array of chars
+             * @param {number} index indicates start index. default=0
+             * @return {!Array<string>}
+             */
+            function dotify(username, index = 0) {
+                if (index >= username.length - 1) return [];
+
+                const dotified = [...username];
+                dotified.splice(index + 1, 0, ".");
+
+                // This tree recursion branches on case where a dot is added
+                // and when a dot is not added
+                let result = [
+                    ...dotify(username, index + 1),
+                    ...dotify(dotified, index + 2),
+                ];
+
+                // Add the string version if it is not the same as the initial username
+                if (dotified.join("") !== emailUsername) {
+                    result.splice(0, 0, dotified.join(""));
+                }
+
+                // Add the no dot sanitized version if it is not the same as
+                // the initial username
+                if (index === 0 && username.join("") !== emailUsername) {
+                    result.splice(0, 0, username.join(""));
+                }
+
+                return result;
+            }
+
+            /**
+             * Iteratively generate email aliases using plus prefix
+             * @param {string} username username of email as string
+             * @return {!Array<string>}
+             */
+            function plusify(username) {
+                let words = generateWords(100);
+                let usernameStr = [...username].join("");
+                let result = [];
+
+                for (let i = 0; i < words.length; i++) {
+                    result.push(usernameStr + "+" + words[i]);
+                }
+
+                return [usernameStr + "+WhateverYouWantHere", ...result];
+            }
+
+            /**
+             * Find both dot and plus prefix aliases and update the respective textarea
+             */
+            function findAliases(placeholder = false) {
+                if (document.getElementById("email-target").checkValidity()) {
+                    // Update variables based on user input
+                    emailAddress = document.getElementById("email-target")
+                        .value;
+                    emailUsername = emailAddress.split("@")[0];
+                    emailDomain = emailAddress.split("@")[1];
+                } else if (!placeholder) {
+                    return;
+                }
+
+                // Sanitize username, split into array of chars, then find dot aliases
+                document.getElementById("dotify-result").innerHTML =
+                    dotify(emailUsername.replace(".", "").split("")).join(
+                        "@" + emailDomain + "\n"
+                    ) +
+                    "@" +
+                    emailDomain;
+
+                // Find plus prefix aliases
+                document.getElementById("plusify-result").innerHTML =
+                    plusify(emailUsername).join("@" + emailDomain + "\n") +
+                    "@" +
+                    emailDomain;
+            }
+
+            // Prevent page from refreshing
+            document.getElementById("input-form").onsubmit = function (e) {
+                e.preventDefault();
+            };
+
+            // Populate result with placeholder values
+            findAliases(true);
+        </script>
+    </body>
+</html>

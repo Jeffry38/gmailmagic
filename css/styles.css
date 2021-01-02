@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+.columns,
+.columns:last-child {
+    margin: 0;
+}
+
+ul {
+    line-height: 2.5;
+}
+
+textarea {
+    margin-top: 25px;
+    resize: none !important;
+}
+
+footer {
+    background-color: white !important;
+}
+
+.section-hero {
+    background-color: #ffffff;
+}
+
+.section-hero #input-form {
+    width: 500px;
+    max-width: 100%;
+}
+
+.section-hero #input-form .field {
+    width: 100%;
+}
+
+.section-hero #input-form .email-input-container {
+    width: 100%;
+}
+
+.section-hero .postscript {
+    color: #a5a5a5;
+}
+
+.section-result {
+    background-color: #fafafa;
+}
+
+.section-result .dot-trick textarea {
+    width: 100%;
+    height: 500px;
+}
+
+.section-result .plus-trick textarea {
+    width: 100%;
+    height: 500px;
+}
